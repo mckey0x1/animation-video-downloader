@@ -140,6 +140,122 @@ export default function VideoRecorder({
     };
   }, [recording]);
 
+  // 4K JPG capture and download
+  const handleCapture4KJPG = () => {
+    if (!canvasRef.current) {
+      alert("No canvas available for capture");
+      return;
+    }
+    const canvas = canvasRef.current;
+    const originalWidth = canvas.width;
+    const originalHeight = canvas.height;
+    const originalStyleWidth = canvas.style.width;
+    const originalStyleHeight = canvas.style.height;
+
+    // Set to 4K
+    canvas.width = 3840;
+    canvas.height = 2160;
+    canvas.style.width = "3840px";
+    canvas.style.height = "2160px";
+
+    // Redraw the scene if possible
+    // If using three.js, you may need to force a render here
+    if ((window as any).forceThreeRender) {
+      (window as any).forceThreeRender();
+    }
+
+    setTimeout(() => {
+      try {
+        const dataUrl = canvas.toDataURL("image/jpeg", 1);
+        const link = document.createElement("a");
+        link.href = dataUrl;
+        link.download = "capture.jpg";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      } catch (err) {
+        alert("Failed to capture image");
+      } finally {
+        // Restore original size
+        canvas.width = originalWidth;
+        canvas.height = originalHeight;
+        canvas.style.width = originalStyleWidth;
+        canvas.style.height = originalStyleHeight;
+        // Optionally force a render again
+        if ((window as any).forceThreeRender) {
+          (window as any).forceThreeRender();
+        }
+      }
+    }, 100);
+  };
+
+  // 8K JPG capture and download
+  const handleCapture8KJPG = () => {
+    if (!canvasRef.current) {
+      alert("No canvas available for capture");
+      return;
+    }
+    const canvas = canvasRef.current;
+    const originalWidth = canvas.width;
+    const originalHeight = canvas.height;
+    const originalStyleWidth = canvas.style.width;
+    const originalStyleHeight = canvas.style.height;
+
+    // Set to 8K
+    canvas.width = 7680;
+    canvas.height = 4320;
+    canvas.style.width = "7680px";
+    canvas.style.height = "4320px";
+
+    // Redraw the scene if possible
+    if ((window as any).forceThreeRender) {
+      (window as any).forceThreeRender();
+    }
+
+    setTimeout(() => {
+      try {
+        const dataUrl = canvas.toDataURL("image/jpeg", 1);
+        const link = document.createElement("a");
+        link.href = dataUrl;
+        link.download = "capture-8k.jpg";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      } catch (err) {
+        alert("Failed to capture image");
+      } finally {
+        // Restore original size
+        canvas.width = originalWidth;
+        canvas.height = originalHeight;
+        canvas.style.width = originalStyleWidth;
+        canvas.style.height = originalStyleHeight;
+        if ((window as any).forceThreeRender) {
+          (window as any).forceThreeRender();
+        }
+      }
+    }, 100);
+  };
+
+  // Capture JPG at current resolution
+  const handleCaptureJPG = () => {
+    if (!canvasRef.current) {
+      alert("No canvas available for capture");
+      return;
+    }
+    const canvas = canvasRef.current;
+    try {
+      const dataUrl = canvas.toDataURL("image/jpeg", 1);
+      const link = document.createElement("a");
+      link.href = dataUrl;
+      link.download = "capture.jpg";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (err) {
+      alert("Failed to capture image");
+    }
+  };
+
   return (
     <div className="fixed top-4 right-4 z-50 bg-black/80 text-white p-4 rounded-lg min-w-[200px]">
       {recording && (
@@ -151,6 +267,24 @@ export default function VideoRecorder({
           </span>
         </div>
       )}
+      <button
+        className="mt-3 w-full bg-white text-black rounded px-3 py-1 text-sm font-semibold hover:bg-gray-200 transition"
+        onClick={handleCapture4KJPG}
+        type="button">
+        Download 4K JPG
+      </button>
+      <button
+        className="mt-2 w-full bg-white text-black rounded px-3 py-1 text-sm font-semibold hover:bg-gray-200 transition"
+        onClick={handleCapture8KJPG}
+        type="button">
+        Download 8K JPG
+      </button>
+      <button
+        className="mt-2 w-full bg-white text-black rounded px-3 py-1 text-sm font-semibold hover:bg-gray-200 transition"
+        onClick={handleCaptureJPG}
+        type="button">
+        Capture JPG
+      </button>
     </div>
   );
 }
